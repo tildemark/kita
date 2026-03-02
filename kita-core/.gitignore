@@ -1,0 +1,3 @@
+# kita-core Gitignore
+/target
+.env
