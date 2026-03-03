@@ -21,7 +21,7 @@ pub fn run() {
                 .expect("Failed to spawn kita-core sidecar");
 
             // Store the child handle so we can kill it on exit.
-            app.manage(std::sync::Mutex::new(child));
+            app.manage(std::sync::Mutex::new(Some(child)));
 
             log::info!("kita-core sidecar started");
             Ok(())
@@ -31,11 +31,13 @@ pub fn run() {
                 // Kill the sidecar when the main window closes.
                 if let Some(child_mutex) = window
                     .app_handle()
-                    .try_state::<std::sync::Mutex<tauri_plugin_shell::process::CommandChild>>()
+                    .try_state::<std::sync::Mutex<Option<tauri_plugin_shell::process::CommandChild>>>()
                 {
-                    if let Ok(mut child) = child_mutex.lock() {
-                        let _ = child.kill();
-                        log::info!("kita-core sidecar stopped");
+                    if let Ok(mut child_opt) = child_mutex.lock() {
+                        if let Some(child) = child_opt.take() {
+                            let _ = child.kill();
+                            log::info!("kita-core sidecar stopped");
+                        }
                     }
                 }
             }

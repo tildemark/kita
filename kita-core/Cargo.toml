@@ -12,10 +12,7 @@ jsonwebtoken = "9.3.0"
 tower-http = { version = "0.5.2", features = ["cors", "trace", "fs"] }
 
 # Database
-# kv-mem     = in-process memory engine (dev / testing)
-# kv-rocksdb = persistent embedded storage — requires LLVM/libclang:
-#   winget install LLVM.LLVM
-surrealdb = { version = "2.0.4", features = ["kv-mem"] }
+surrealdb = { version = "2.6.2", features = ["kv-mem"] }
 tower = "0.4.13"
 
 # Auth & Security

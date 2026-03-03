@@ -38,8 +38,12 @@ export default function SukiPage() {
             });
             if (res.status === 401) { router.push("/login"); return; }
             setItems(await res.json());
-        } catch {
-            setError("Failed to load items");
+        } catch (e: unknown) {
+            if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+                setError(`Connection refused. Cannot connect to ${apiBaseUrl}`);
+            } else {
+                setError("Failed to load items");
+            }
         } finally {
             setLoading(false);
         }
@@ -93,7 +97,11 @@ export default function SukiPage() {
             setCart([]);
             fetchItems(); // refresh stock
         } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Checkout failed");
+            if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+                setError(`Connection refused. Checkout failed, cannot connect to ${apiBaseUrl}`);
+            } else {
+                setError(e instanceof Error ? e.message : "Checkout failed");
+            }
         } finally {
             setCheckingOut(false);
         }

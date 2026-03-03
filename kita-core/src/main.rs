@@ -19,15 +19,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "kita_dev_secret_change_me_in_production".to_string()
     });
 
-    // DB URI: default to rocksdb for desktop persistence.
-    // Override with KITA_DB_URI=memory for dev/testing.
+    // DB connection — defaults to a local SurrealDB server.
+    // Override via env vars for remote/production.
     let db_uri = std::env::var("KITA_DB_URI")
-        .unwrap_or_else(|_| "rocksdb://./kita.db".to_string());
+        .unwrap_or_else(|_| "ws://localhost:8000".to_string());
+    let db_user = std::env::var("SURREAL_USER").ok();
+    let db_pass = std::env::var("SURREAL_PASS").ok();
 
     tracing::info!("Connecting to SurrealDB at: {}", db_uri);
 
     // Connect to SurrealDB
-    let db = db::init_db(&db_uri, "kita", "kita").await?;
+    let db = db::init_db(
+        &db_uri, "kita", "kita",
+        db_user.as_deref(),
+        db_pass.as_deref(),
+    ).await?;
 
     // Apply schema and seed default admin user
     db::seed_db(&db).await?;

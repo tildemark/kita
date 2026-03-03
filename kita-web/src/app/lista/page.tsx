@@ -36,7 +36,11 @@ export default function ListaPage() {
             if (!res.ok) throw new Error("Failed to load items");
             setItems(await res.json());
         } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Error loading items");
+            if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+                setError(`Connection refused. Could not load items from ${apiBaseUrl}`);
+            } else {
+                setError(e instanceof Error ? e.message : "Error loading items");
+            }
         } finally {
             setLoading(false);
         }
@@ -65,7 +69,11 @@ export default function ListaPage() {
             setFormData({ name: "", price: "", stock: "" });
             fetchItems();
         } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Error creating item");
+            if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+                setError(`Connection refused. Could not save item to ${apiBaseUrl}`);
+            } else {
+                setError(e instanceof Error ? e.message : "Error creating item");
+            }
         } finally {
             setCreating(false);
         }

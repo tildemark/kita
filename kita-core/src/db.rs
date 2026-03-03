@@ -35,8 +35,16 @@ struct CountRow {
     count: i64,
 }
 
-pub async fn init_db(uri: &str, ns: &str, db_name: &str) -> surrealdb::Result<Surreal<Any>> {
+pub async fn init_db(uri: &str, ns: &str, db_name: &str, user: Option<&str>, pass: Option<&str>) -> surrealdb::Result<Surreal<Any>> {
     let db = connect(uri).await?;
+    // Sign in as root when credentials are provided (remote server).
+    // Not required for memory:// (dev/test).
+    if let (Some(u), Some(p)) = (user, pass) {
+        db.signin(surrealdb::opt::auth::Root {
+            username: u,
+            password: p,
+        }).await?;
+    }
     db.use_ns(ns).use_db(db_name).await?;
     Ok(db)
 }

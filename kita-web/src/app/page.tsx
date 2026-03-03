@@ -41,9 +41,9 @@ export default function Home() {
           >
             Live Demo <ArrowRight size={18} />
           </Link>
-          <a shrink-0
+          <a
             href="https://github.com/your-username/kita" target="_blank" rel="noopener"
-            className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-white px-8 py-3.5 rounded-full font-medium hover:bg-zinc-800 transition"
+            className="flex shrink-0 items-center gap-2 bg-zinc-900 border border-zinc-800 text-white px-8 py-3.5 rounded-full font-medium hover:bg-zinc-800 transition"
           >
             <Github size={18} /> View Source
           </a>

@@ -34,7 +34,11 @@ export default function LoginPage() {
             setToken(data.token);
             router.push("/lista");
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : "Login failed");
+            if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
+                setError(`Connection refused. Is the server running at ${apiBaseUrl}?`);
+            } else {
+                setError(err instanceof Error ? err.message : "Login failed");
+            }
         } finally {
             setLoading(false);
         }
