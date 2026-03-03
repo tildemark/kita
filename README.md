@@ -84,5 +84,67 @@ kita/
     The web app will be accessible at `http://localhost:3000`.
 
 ## Architecture Roadmap
-- **Phase 1 & 2:** Cloud SaaS Setup (Current) - Running backend as a standalone Rust API server and Next.js frontend communicating with it over HTTP REST.
-- **Phase 3:** Desktop App packaging - Serving the exported Next.js static files via Tauri with the Rust backend integrated natively for true offline-first Windows usage.
+- **Phase 1 & 2:** Cloud SaaS Setup (Complete) — Rust API server + Next.js frontend over HTTP REST.
+- **Phase 3:** Desktop App (Complete) — Tauri shell packaging the Next.js static export with `kita-core` as an embedded sidecar.
+
+## Deploying the Desktop App (Windows)
+
+### Step 1 — Enable Persistent Storage (RocksDB)
+
+> **Required before building the installer.** By default `kita-core` uses an in-memory database, meaning all data is lost when the app closes. For a real deployment you must switch to **RocksDB** (embedded file-based storage).
+
+**1a. Install LLVM** (required to compile RocksDB bindings):
+```powershell
+winget install LLVM.LLVM
+# Then restart your terminal so LLVM is on PATH
+```
+
+**1b. Enable the feature flag** in `kita-core/Cargo.toml`:
+```toml
+# Change this line:
+surrealdb = { version = "2.0.4", features = ["kv-mem"] }
+
+# To this:
+surrealdb = { version = "2.0.4", features = ["kv-mem", "kv-rocksdb"] }
+```
+
+**1c. Update `kita-core/.env`** to remove the memory override:
+```env
+JWT_SECRET=<your-production-secret>
+# Remove or comment out: KITA_DB_URI=memory
+# The sidecar will default to: rocksdb://./kita.db
+```
+
+### Step 2 — Build the kita-core sidecar binary
+
+```powershell
+cd kita-core
+cargo build --release
+
+# Copy the binary to the Tauri binaries directory (required naming convention):
+Copy-Item target\release\kita-core.exe `
+  ..\kita-web\src-tauri\binaries\kita-core-x86_64-pc-windows-msvc.exe
+```
+
+### Step 3 — Build the Windows installer
+
+```powershell
+cd kita-web
+npm run tauri:build
+```
+
+The installer will be at:
+```
+kita-web/src-tauri/target/release/bundle/nsis/KITA_0.3.0_x64-setup.exe
+```
+
+### Default Credentials (First Run)
+
+The app auto-seeds a default admin on first launch:
+
+| Username | Password |
+|---|---|
+| `admin` | `admin123` |
+
+> ⚠️ Change the `JWT_SECRET` in production and update the admin password after first login.
+
