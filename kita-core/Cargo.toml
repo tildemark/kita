@@ -1,6 +1,6 @@
 [package]
 name = "kita-core"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 
 [dependencies]
@@ -12,8 +12,9 @@ jsonwebtoken = "9.3.0"
 tower-http = { version = "0.5.2", features = ["cors", "trace", "fs"] }
 
 # Database
-# kv-mem  = in-process memory engine (dev / testing)
-# kv-rocksdb = persistent embedded storage (swap in for production)
+# kv-mem     = in-process memory engine (dev / testing)
+# kv-rocksdb = persistent embedded storage — requires LLVM/libclang:
+#   winget install LLVM.LLVM
 surrealdb = { version = "2.0.4", features = ["kv-mem"] }
 tower = "0.4.13"
 

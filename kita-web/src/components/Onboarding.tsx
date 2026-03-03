@@ -10,7 +10,7 @@ export default function Onboarding() {
 
     const handleSelect = (offline: boolean) => {
         setMode(offline);
-        router.push("/suki"); // Navigate to POS after selection
+        router.push("/login");
     };
 
     return (

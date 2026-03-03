@@ -9,7 +9,22 @@ Major: New Feature
 Minor: New Functionality
 Patch: Bug Fix
 
+## [0.3.0] - 2026-03-03
+### Added
+- Tauri v2 desktop app scaffolding inside `kita-web/src-tauri`.
+- `kita-core` set as a Tauri external sidecar binary — auto-starts on app launch, killed on window close.
+- Configured for Windows NSIS installer bundling (target: `nsis`).
+- App identifier set to `ph.sanchez.kita`; window defaults to 1280×800 with 960×640 minimum.
+- `tauri-plugin-shell` for sidecar process management in `lib.rs`.
+- `KITA_DB_URI` env var support in `kita-core` — defaults to `rocksdb://./kita.db` for sidecar persistence.
+- Onboarding screen now routes through `/login` after mode selection (previously skipped auth).
+- `binaries/README.md` documenting the pre-build copy step for the sidecar `.exe`.
+
+### Notes
+- `kv-rocksdb` deferred: requires LLVM (`winget install LLVM.LLVM`) before enabling.
+
 ## [0.2.0] - 2026-03-03
+
 ### Added
 - Real SurrealDB-backed API handlers replacing all stub implementations.
 - `POST /api/auth/login` — bcrypt password verification with signed JWT issuance (8-hour expiry).
